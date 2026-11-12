@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rev Drive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#131412;color:#eee9db;font:14px/1.5 "IBM Plex Mono",monospace}
+main{max-width:640px;margin:auto;padding:24px clamp(16px,5vw,38px) 32px}
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #49473e;padding-bottom:12px}
+h1{font:700 42px/1 "Barlow Condensed",sans-serif;margin:0;text-transform:uppercase;letter-spacing:.025em}
+header span,label,.caption{color:#bdb7a5}.accent{color:#ffd064}
+nav{display:flex;gap:8px;margin:20px 0}
+button{font:inherit;color:inherit;background:#24251f;border:1px solid #555348;padding:10px 14px;cursor:pointer;border-radius:3px}
+button[aria-pressed=true],#power{color:#17160f;background:#ffd064;border-color:#ffd064;font-weight:500}
+button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.cluster{padding:24px 20px;background:radial-gradient(ellipse at top,#302e24,#191a16 75%);border:1px solid #49473e}
+.readouts{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.value{display:block;font:600 clamp(34px,10vw,75px)/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.caption{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+meter{width:100%;height:18px;margin-top:14px;accent-color:#ffd064}
+meter::-webkit-meter-optimum-value{background:#ffd064}
+.controls{padding:18px 0;border-bottom:1px solid #49473e}
+input[type=range]{display:block;width:100%;margin:10px 0;accent-color:#ffd064}
+p{margin:8px 0 12px}footer{display:flex;gap:16px;align-items:center;margin-top:18px}#status{color:#bdb7a5}
+[hidden]{display:none!important}
+</style>
+<main>
+<header><h1>Rev<span class="accent"> Drive</span></h1><span>Cross-plane V8</span></header>
+<nav aria-label="Driving mode">
+<button id="park" aria-pressed="true">Parked test</button>
+<button id="drive" aria-pressed="false">Phone sensors</button>
+</nav>
+<section class="cluster" aria-label="Engine instruments">
+<div class="readouts">
+<div><output id="rpm" class="value accent">850</output><span class="caption">RPM</span></div>
+<div><output id="gear" class="value">1</output><span class="caption">Gear</span></div>
+<div><output id="speed" class="value">0</output><span class="caption">km/h</span></div>
+</div>
+<meter id="tach" min="0" max="6500" value="850" aria-label="Tachometer"></meter>
+</section>
+<section class="controls" id="simulation">
+<label for="pedal">Test throttle</label>
+<input id="pedal" type="range" min="0" max="100" value="0">
+</section>
+<section class="controls" id="sensors" hidden>
+<p>While parked, mount the phone upright with its screen facing you. Start the engine, grant motion and location access, then zero the motion sensor.</p>
+<button id="zero">Zero motion</button>
+<label><input id="flip" type="checkbox"> Reverse motion direction</label>
+<p id="sensorStatus" role="status"></p>
+</section>
+<section class="controls"><label for="volume">Engine volume</label><input id="volume" type="range" min="0" max="100" value="28"></section>
+<footer><button id="power">Start engine</button><span id="status" role="status">Engine off</span></footer>
+</main>
+<script type="module" src="drive.js"></script>
+</html>
