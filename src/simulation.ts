@@ -6,9 +6,10 @@ let rpm = idle;
 let gear = 0;
 let lastShift = 0;
 let speed = 0;
+let demand = 0;
 
 export function resetSimulation() {
-  speed = gear = 0;
+  speed = gear = demand = 0;
   rpm = idle;
   lastShift = -Infinity;
 }
@@ -35,13 +36,23 @@ export function stepSimulation(now: number, dt: number, throttle: number, sensor
   }
   const wheelRpm = speed * 60 / 2.08;
   const coupledRpm = wheelRpm * ratios[gear] * 3.27;
-  if (now - lastShift > 650) {
-    if (coupledRpm > 3000 + 2800 * load && gear < ratios.length - 1) {
+  // Respond immediately to pedal changes and damp noise from phone motion.
+  const previousDemand = demand;
+  demand += (load - demand) * (1 - Math.exp(-dt * (sensors ? 9 : 20)));
+  const shiftDemand = clamp(demand + (demand - previousDemand) * 2, 0, 1);
+  const upshiftRpm = 1700 + 4000 * shiftDemand ** 1.5;
+  const downshiftRpm = 1050 + 1950 * shiftDemand;
+  if (now - lastShift >= 260) {
+    if (coupledRpm >= upshiftRpm && gear < ratios.length - 1) {
       gear++;
       lastShift = now;
-    } else if (gear > 0 && coupledRpm < 1350 + 1250 * load) {
-      gear--;
-      lastShift = now;
+    } else if (gear > 0 && coupledRpm <= downshiftRpm) {
+      const lowerGearRpm = wheelRpm * ratios[gear - 1] * 3.27;
+      // Leave enough room for acceleration before the next upshift.
+      if (lowerGearRpm < upshiftRpm - 250) {
+        gear--;
+        lastShift = now;
+      }
     }
   }
   const target = clamp(Math.max(idle + load * 750, wheelRpm * ratios[gear] * 3.27), idle, 6500);
