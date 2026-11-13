@@ -1,0 +1,4 @@
+https://github.com/Antonio-R1/engine-sound-generator
+Commit: c76c5adb9e63f5a54fb0def3b97e8e0ac1a7dea1
+MIT License (see LICENSE).
+Local changes: sample-rate scaling, deterministic crank phase, throttle-dependent combustion and intake excitation.
